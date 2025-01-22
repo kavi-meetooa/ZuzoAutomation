@@ -3,17 +3,22 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --no-deprecation -r ts-node/register src/tests/apiRequest.spec.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Playwright Automation Framework for Zuzo",
   "dependencies": {
     "@azure/identity": "^4.6.0",
     "@azure/msal-node": "^3.0.1",
     "@microsoft/microsoft-graph-client": "^3.0.7",
-    "axios": "^1.7.9"
+    "@types/node": "^22.10.7",
+    "@types/node-fetch": "^2.6.12",
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
+    "node-fetch": "^2.7.0",
+    "punycode": "^2.3.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.1",
@@ -21,5 +26,8 @@
     "playwright": "^1.49.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
+  },
+  "directories": {
+    "test": "tests"
   }
 }
