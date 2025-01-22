@@ -2,9 +2,9 @@ import fetch from 'node-fetch';
 
 // Function to get the OAuth 2.0 token
 export async function getAccessToken(): Promise<string> {
-  const clientId = '05a2a529-26a7-438a-9d51-2fdd6651984c';
-  const clientSecret = 'gqj8Q~v9IxTivAECn.F-9pAQWIFCJjDPvks1XcaK';
-  const tenantId = 'd454e49e-dc50-4bab-9f06-fe9586952831';  
+  const clientId = '';
+  const clientSecret = '';
+  const tenantId = '';  
   const scope = 'Mail.ReadWrite';  
   
   const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
