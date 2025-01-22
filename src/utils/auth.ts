@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 // Function to get the OAuth 2.0 token
 export async function getAccessToken(): Promise<string> {
   const clientId = '';
-  const clientSecret = '';
+  //const clientSecret = '';
   const tenantId = '';  
   const scope = 'Mail.ReadWrite';  
   
@@ -11,7 +11,7 @@ export async function getAccessToken(): Promise<string> {
 
   const form = new URLSearchParams();
   form.append('client_id', clientId);
-  form.append('client_secret', clientSecret);
+  //form.append('client_secret', clientSecret);
   form.append('scope', scope);
   form.append('grant_type', 'client_credentials');  
 
