@@ -1,5 +1,4 @@
 import { Page } from 'playwright';
-import { config } from "../config/config";
 import * as helper from "../utils/helper";
 import messages from "../data/messages";
 
@@ -14,7 +13,7 @@ export class loginPage {
         SignUplink      : () => this.page.getByText('Sign up'),
         sendAgainlink   : () => this.page.getByText('send again'),
         emailSentToast  : () => this.page.locator('.p-4'),
-        emailErrorMsg   : () => this.page.locator('.//span[contains(@class, "yoyo-error-red")]'),
+        emailErrorMsg   : () => this.page.locator('xpath=.//span[contains(@class, "yoyo-error-red")]'),
         emailSentMsg    : () => this.page.locator('//*[contains(@class, "text-6xl")]'),
         emailErrorToast : () => this.page.locator('.p-4'),
     };
@@ -27,8 +26,6 @@ export class loginPage {
 // Navigate to Login page
 async navigateToLogin() : Promise<void>
 {
-    await helper.navigateToUrl(this.page, config.baseUrl);
-    await helper.maximizeWindow(this.page);
     this.clickLoginBtn();
     console.info("Test step : Navigate to Login page - PASS");
 }
@@ -72,11 +69,11 @@ async clickSendAgain() : Promise<void>
 /********************************************************************************************************************/
 async validateEmail() : Promise<void>
 {
-    'Scenario 1 : Click on Submit with blank email field'
+    console.log('Scenario 1 : Click on Submit with blank email field');
     this.clickSubmit();
     helper.verifyMessage(this.page, this.Locators.emailErrorMsg(), messages.errorMessages['login.blank_email']);
 
-    'Scenario 2 : Enter an invalid format for email and click on Submit'
+    console.log('Scenario 2 : Enter an invalid format for email and click on Submit');
     helper.fillElement(this.Locators.txtCompanyEmail(), 'abc$%$5.com@', 'Enter an invalid email format for Company email');
     helper.verifyMessage(this.page, this.Locators.emailErrorMsg(), messages.errorMessages['login.invalid_email']);
 }

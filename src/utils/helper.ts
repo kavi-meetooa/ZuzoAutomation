@@ -1,4 +1,11 @@
-import { Page, Locator } from 'playwright';
+import { Page, Locator, defineConfig } from 'playwright/test';
+import fetch from 'node-fetch';
+import { config } from '../config/config';
+import axios from 'axios'
+import * as dotenv from 'dotenv';
+
+//Load environment variables from .env file
+dotenv.config();
 
 /*----------------------------------------------------------------------------------------------------------------*/
 // Function to check if an element is clickable
@@ -132,20 +139,27 @@ export async function navigateToUrl(page : Page, url : string): Promise<void> {
 /*----------------------------------------------------------------------------------------------------------------*/
 // Function to maximise browser
 /*----------------------------------------------------------------------------------------------------------------*/
-  export async function maximizeWindow(page: Page): Promise<void> {
-    try 
-    {
+export async function maximizeWindow(page: Page): Promise<void> {
+  try {
+    // Check if we are running in headed mode
+    const isHeaded = !process.env.HEADLESS || process.env.HEADLESS === 'false';
+
+    if (isHeaded) {
+      // Set the viewport to the maximum screen dimensions for headed mode
       const { width, height } = await page.evaluate(() => ({
-        width: window.screen.availWidth,
-        height: window.screen.availHeight
+        width: window.screen.width,
+        height: window.screen.height
       }));
+
       await page.setViewportSize({ width, height });
-      console.info(`Test step : Browser window maximize - PASS`);
-    } catch (error) 
-    {
-      console.error(`Test step: FAIL - Error maximizing window: ${(error as Error).message}`);
+      console.info(`Test step: Browser window maximized - PASS`);
+    } else {
+      console.info(`Test step: Skipping window maximization in headless mode.`);
     }
+  } catch (error) {
+    console.error(`Test step: FAIL - Error maximizing window: ${(error as Error).message}`);
   }
+}
 /*----------------------------------------------------------------------------------------------------------------*/
 // Function to assert for messages (success, info, error, toast etc)
 /*----------------------------------------------------------------------------------------------------------------*/
@@ -162,4 +176,103 @@ export async function verifyMessage(page: Page, locator: Locator, message: strin
       throw new Error(`Test step : Verify message "${message}" is present - FAIL`);
     }
   }
+/*----------------------------------------------------------------------------------------------------------------*/
+// Function to extract CTA link from email content
+/*----------------------------------------------------------------------------------------------------------------*/
+export async function extractCtaLink(emailBody: string): Promise<string | null> {
+  // Regex to match the "Verify My Email" link
+  const linkRegex = /<a[^>]+href="([^"]+)"[^>]*>Verify My Email<\/a>/i;
+  const match = emailBody.match(linkRegex);
+  console.log("Extracting the link from CTA button Verify My Email");
+  // If a match is found, return the link. Otherwise, return null.
+  return match ? match[1] : null;
+}
+
+/*----------------------------------------------------------------------------------------------------------------*/
+// Function to make graph API call and retrieve email content from inbox
+/*----------------------------------------------------------------------------------------------------------------*/
+export async function retrieveEmail(companyEmail: string, emailSubject: string): Promise<string> {
+  // Constants for Microsoft Graph API
+  const GRAPH_API_BASE_URL = config.graphApiBaseUrl;
+  const TENANT_ID = process.env.TENANT_ID;
+  const CLIENT_ID = process.env.CLIENT_ID;
+  const CLIENT_SECRET = process.env.CLIENT_SECRET;
+
+  // Ensure environment variables are defined
+  if (!TENANT_ID || !CLIENT_ID || !CLIENT_SECRET) {
+    throw new Error('>> Missing required environment variables');
+  }
+  else
+  {
+    console.info('Client ID is : ' + CLIENT_ID);
+    console.info('>> Environment variables have been loaded successfully');
+  }
+
+  const EMAIL_SUBJECT = emailSubject;
+  const TARGET_EMAIL = 'kaviraj.meetooa@yoyogroup.com';
+
+  // Step 1:  Fetch the access token using OAuth 2.0 Client Credentials Flow
+  const tokenUrl = `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token`;
+
+  let accessToken: string;
+
+  try {
+    console.log('>> Fetching the access Token using OAuth 2.0 Client Credentials Flow');
+    const apiResponse = await axios.post(
+      tokenUrl,
+      new URLSearchParams({
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        scope: config.scope,
+        grant_type: 'client_credentials',
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+
+    if (apiResponse.status === 200 && apiResponse.data.access_token) {
+      accessToken = apiResponse.data.access_token;
+      console.log(">> Access token has been retrieved");
+    } else {
+      throw new Error('>> Failed to fetch access token');
+    }
+  } catch (error) {
+    console.error('Error fetching access token:', error);
+    throw new Error('Failed to fetch access token');
+  }
+
+  // Step 2: Fetch the user's inbox messages
+  console.log(">> Fetching email from user's inbox");
+  console.log(">> Endpoint : " + `${GRAPH_API_BASE_URL}/users/${TARGET_EMAIL}/messages?$top=1&$search="subject:${EMAIL_SUBJECT}"`)
+  const response = await axios.get(
+    `${GRAPH_API_BASE_URL}/users/${TARGET_EMAIL}/messages?$top=1&$search="subject:${EMAIL_SUBJECT}"`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  // Step 3: Ensure the email is found
+  if (response.status !== 200) {
+    throw new Error(`Failed to fetch messages: ${response.status}`);
+  }
+
+  const messages = response.data.value;
+  if (messages.length === 0) {
+    throw new Error('>> No email found with the given subject');
+  }
+
+  const email = messages[0];
+  console.log('>> Email Found with subject :', email.subject);
+
+  // Step 4: Parse the email body to find the "Verify My Email" link
+  const emailBody = email.body.content;
+
+  // Return the email body content
+  return emailBody;
+}
 /*----------------------------------------------------------------------------------------------------------------*/
