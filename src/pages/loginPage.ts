@@ -27,7 +27,8 @@ export class loginPage {
 async navigateToLogin() : Promise<void>
 {
     this.clickLoginBtn();
-    console.info("Test step : Navigate to Login page - PASS");
+    console.info("[INFO] ℹ️  Navigated to Login page");
+    console.log("-------------------------");
 }
 /*******************************************************************************************************************/ 
 // Click on Login Button on Homepage
@@ -76,16 +77,19 @@ async validateEmail() : Promise<void>
     console.log('Scenario 2 : Enter an invalid format for email and click on Submit');
     helper.fillElement(this.Locators.txtCompanyEmail(), 'abc$%$5.com@', 'Enter an invalid email format for Company email');
     helper.verifyMessage(this.page, this.Locators.emailErrorMsg(), messages.errorMessages['login.invalid_email']);
+    console.log("-------------------------");
 }
 /********************************************************************************************************************/
 async verifyEmailSentMessage() : Promise<void>
 {
     helper.verifyMessage(this.page, this.Locators.emailSentMsg(), messages.infoMessage['sentEmail.header']);
+    console.log("-------------------------");
 }
 /********************************************************************************************************************/
 async verifysendAgainToast() : Promise<void>
 {
     helper.verifyMessage(this.page, this.Locators.emailSentToast(), messages.toastMessages['email.sendAgain']);
+    console.log("-------------------------");
 }
 /********************************************************************************************************************/
 }// end of class

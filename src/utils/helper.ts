@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import { config } from '../config/config';
 import axios from 'axios'
 import * as dotenv from 'dotenv';
+import { faker } from '@faker-js/faker';
 
 //Load environment variables from .env file
 dotenv.config();
@@ -29,7 +30,7 @@ async function isClickable(locator: Locator): Promise<boolean> {
     return isEnabled;
   } catch (error) 
   {
-    console.error(`Error checking if element is clickable: ${(error as Error).message}`);
+    console.error(`❌ Error checking if element is clickable: ${(error as Error).message}`);
     throw error;
     return false; // Return false if there's an error
   }
@@ -45,12 +46,12 @@ export async function clickElement(locator: Locator, stepName: string): Promise<
         await locator.scrollIntoViewIfNeeded();
         // Attempt to click the element
         await locator.click();
-        console.info(`>>Test step : ${stepName} - PASS`);
+        console.info(`>> ✅ Test step : PASS - ${stepName}`);
       } else {
-        console.error(`>>Test step : ${stepName} - FAIL >>> Element is not clickable.`);
+        console.error(`>> ❌ Test step : FAIL - ${stepName} >> Element is not clickable.`);
       }
     } catch (error) {
-      console.error(`>>Test step : ${stepName} - FAIL \nError: ${(error as Error).message}`);
+      console.error(`>> ❌ Test step : FAIL - ${stepName}\nError: ${(error as Error).message}`);
       throw error;
     }
 }
@@ -65,12 +66,12 @@ export async function fillElement(locator: Locator, text: string, stepName: stri
       // Check if the locator is editable
       if (await locator.isEditable()) {
         await locator.fill(text);
-        console.info(`>>Test step : ${stepName} - PASS`);
+        console.info(`>> ✅ Test step : PASS - ${stepName}`);
       } else {
-        throw new Error('Element is not editable');
+        throw new Error('❌ Element is not editable');
       }
     } catch (error) {
-      console.error(`>>Test step: ${stepName} - FAIL \nError: ${(error as Error).message}`);
+      console.error(`>> ❌ Test step: FAIL - ${stepName}\nError: ${(error as Error).message}`);
       throw error;
     }
 }
@@ -80,9 +81,9 @@ export async function fillElement(locator: Locator, text: string, stepName: stri
 export async function waitForElement(locator: Locator, stepName: string, timeout: number = 10000): Promise<void> {
     try {
       await locator.waitFor({ state: 'visible', timeout });
-      console.info(`>>Test step: ${stepName} - PASS`);
+      console.info(`>> ✅ Test step: PASS - ${stepName}`);
     } catch (error) {
-      console.error(`>>Test step: ${stepName} - FAIL\nError: ${(error as Error).message}`);
+      console.error(`>> ❌ Test step: FAIL - ${stepName}\nError: ${(error as Error).message}`);
       throw error;
     }
 }
@@ -95,9 +96,9 @@ export async function clearTextbox(locator: Locator, stepName: string): Promise<
       await locator.click();
       // Clear the textbox
       await locator.fill('');
-      console.log(`>>Test step: ${stepName} - PASS`);
+      console.log(`>> ✅ Test step: PASS - ${stepName}`);
     } catch (error) {
-      console.error(`>>Test step: ${stepName} - FAIL\nError: ${(error as Error).message}`);
+      console.error(`>> ❌ Test step: FAIL - ${stepName}\nError: ${(error as Error).message}`);
       throw error;
     }
 }
@@ -113,10 +114,10 @@ export async function getElementText(selector: Locator): Promise<string | null> 
     const elementText = await selector.textContent();
 
     // Log and return the trimmed text content
-    console.log(`Text of element: ${elementText?.trim()}`);
+    console.log(`[INFO] ℹ️ Text of element: ${elementText?.trim()}`);
     return elementText ? elementText.trim() : null;
   } catch (error) {
-    console.error(`Error getting text of element:`, error);
+    console.error(`❌ Error getting text of element:`, error);
     return null;
   }
 }
@@ -130,36 +131,12 @@ export async function navigateToUrl(page : Page, url : string): Promise<void> {
           waitUntil: 'networkidle', // Wait for no network connections
           timeout: 30000, // 
         });
-        console.log(`Successfully navigated to: ${url}`);
+        console.log(`[INFO] ℹ️ Successfully navigated to: ${url}`);
       } catch (error) {
-        console.error(`Failed to navigate to ${url}:`, error);
+        console.error(`❌ Failed to navigate to ${url}:`, error);
         throw error; // Re-throw the error to fail the test if navigation fails
       }
     }
-/*----------------------------------------------------------------------------------------------------------------*/
-// Function to maximise browser
-/*----------------------------------------------------------------------------------------------------------------*/
-export async function maximizeWindow(page: Page): Promise<void> {
-  try {
-    // Check if we are running in headed mode
-    const isHeaded = !process.env.HEADLESS || process.env.HEADLESS === 'false';
-
-    if (isHeaded) {
-      // Set the viewport to the maximum screen dimensions for headed mode
-      const { width, height } = await page.evaluate(() => ({
-        width: window.screen.width,
-        height: window.screen.height
-      }));
-
-      await page.setViewportSize({ width, height });
-      console.info(`Test step: Browser window maximized - PASS`);
-    } else {
-      console.info(`Test step: Skipping window maximization in headless mode.`);
-    }
-  } catch (error) {
-    console.error(`Test step: FAIL - Error maximizing window: ${(error as Error).message}`);
-  }
-}
 /*----------------------------------------------------------------------------------------------------------------*/
 // Function to assert for messages (success, info, error, toast etc)
 /*----------------------------------------------------------------------------------------------------------------*/
@@ -170,10 +147,10 @@ export async function verifyMessage(page: Page, locator: Locator, message: strin
   
     if (messageExists) 
     {
-      console.log(`Test step : Verify message: "${message} is present - PASS"`);
+      console.log(`>> ✅ Test step : PASS - Verify message: "${message} is present"`);
     } else 
     {
-      throw new Error(`Test step : Verify message "${message}" is present - FAIL`);
+      throw new Error(`>> ❌ Test step : FAIL - Verify message "${message}" is present`);
     }
   }
 /*----------------------------------------------------------------------------------------------------------------*/
@@ -183,7 +160,7 @@ export async function extractCtaLink(emailBody: string): Promise<string | null> 
   // Regex to match the "Verify My Email" link
   const linkRegex = /<a[^>]+href="([^"]+)"[^>]*>Verify My Email<\/a>/i;
   const match = emailBody.match(linkRegex);
-  console.log("Extracting the link from CTA button Verify My Email");
+  console.log("[INFO] ℹ️ Extracting the link from CTA button Verify My Email");
   // If a match is found, return the link. Otherwise, return null.
   return match ? match[1] : null;
 }
@@ -200,16 +177,16 @@ export async function retrieveEmail(companyEmail: string, emailSubject: string):
 
   // Ensure environment variables are defined
   if (!TENANT_ID || !CLIENT_ID || !CLIENT_SECRET) {
-    throw new Error('>> Missing required environment variables');
+    throw new Error('>> ❌ Missing required environment variables');
   }
   else
   {
-    console.info('Client ID is : ' + CLIENT_ID);
-    console.info('>> Environment variables have been loaded successfully');
+    console.info('[INFO] ℹ️ Client ID is : ' + CLIENT_ID);
+    console.info('[INFO] ℹ️ Environment variables have been loaded successfully');
   }
 
   const EMAIL_SUBJECT = emailSubject;
-  const TARGET_EMAIL = 'kaviraj.meetooa@yoyogroup.com';
+  const TARGET_EMAIL = config.credentials.email;
 
   // Step 1:  Fetch the access token using OAuth 2.0 Client Credentials Flow
   const tokenUrl = `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token`;
@@ -217,7 +194,7 @@ export async function retrieveEmail(companyEmail: string, emailSubject: string):
   let accessToken: string;
 
   try {
-    console.log('>> Fetching the access Token using OAuth 2.0 Client Credentials Flow');
+    console.log('[INFO] ℹ️ Fetching the access Token using OAuth 2.0 Client Credentials Flow');
     const apiResponse = await axios.post(
       tokenUrl,
       new URLSearchParams({
@@ -235,18 +212,18 @@ export async function retrieveEmail(companyEmail: string, emailSubject: string):
 
     if (apiResponse.status === 200 && apiResponse.data.access_token) {
       accessToken = apiResponse.data.access_token;
-      console.log(">> Access token has been retrieved");
+      console.log("[INFO] ℹ️ Access token has been retrieved");
     } else {
-      throw new Error('>> Failed to fetch access token');
+      throw new Error('>> ❌ Failed to fetch access token');
     }
   } catch (error) {
-    console.error('Error fetching access token:', error);
-    throw new Error('Failed to fetch access token');
+    console.error('❌ Error fetching access token:', error);
+    throw new Error('❌ Failed to fetch access token');
   }
 
   // Step 2: Fetch the user's inbox messages
-  console.log(">> Fetching email from user's inbox");
-  console.log(">> Endpoint : " + `${GRAPH_API_BASE_URL}/users/${TARGET_EMAIL}/messages?$top=1&$search="subject:${EMAIL_SUBJECT}"`)
+  console.log("[INFO] ℹ️ Fetching email from user's inbox");
+  console.log("[INFO] ℹ️ Endpoint : " + `${GRAPH_API_BASE_URL}/users/${TARGET_EMAIL}/messages?$top=1&$search="subject:${EMAIL_SUBJECT}"`)
   const response = await axios.get(
     `${GRAPH_API_BASE_URL}/users/${TARGET_EMAIL}/messages?$top=1&$search="subject:${EMAIL_SUBJECT}"`,
     {
@@ -258,21 +235,122 @@ export async function retrieveEmail(companyEmail: string, emailSubject: string):
 
   // Step 3: Ensure the email is found
   if (response.status !== 200) {
-    throw new Error(`Failed to fetch messages: ${response.status}`);
+    throw new Error(`❌ Failed to fetch messages: ${response.status}`);
   }
 
   const messages = response.data.value;
   if (messages.length === 0) {
-    throw new Error('>> No email found with the given subject');
+    throw new Error('>> ❌ No email found with the given subject');
   }
 
   const email = messages[0];
-  console.log('>> Email Found with subject :', email.subject);
+  console.log('[INFO] ℹ️ Email Found with subject :', email.subject);
 
   // Step 4: Parse the email body to find the "Verify My Email" link
   const emailBody = email.body.content;
 
   // Return the email body content
   return emailBody;
+}
+/*----------------------------------------------------------------------------------------------------------------*/
+// Function to verify if an element is visible on a page
+/*----------------------------------------------------------------------------------------------------------------*/
+export async function verifyElementPresent(locator: Locator, timeout: number = 15000): Promise<boolean> {
+  try {
+    // Wait for the element to be present in the DOM
+    await locator.waitFor({ state: 'attached', timeout });
+
+    // Check if the element is visible
+    const isVisible = await locator.isVisible();
+
+    const elementName = await locator.textContent();
+    
+    // Log the result and return true/false
+    if (isVisible) {
+      console.log(`>> ✅ Test step: PASS - Element ${elementName} is present and visible.`);
+      return true;
+    } else {
+      console.log(`>> ❌ Test step: FAIL - Element ${elementName} is not visible.`);
+      return false;
+    }
+  } catch (error) {
+    console.error(`>> ❌ Test step: FAIL - Element is not present. Error: ${(error as Error).message}`);
+    return false;
+  }
+}
+/*----------------------------------------------------------------------------------------------------------------*/
+// Use Faker to generate test data by passing parameter the attribute(firstName, lastName, companyName)
+export async function generateFakeData(attribute: string): Promise<string | null> {
+  try {
+    let fakeData: string;
+
+    // Check if the attribute is supported
+    if (!['firstName', 'lastName', 'companyName'].includes(attribute)) {
+      throw new Error(`❌ Unsupported attribute: ${attribute}`);
+    }
+
+    switch (attribute) {
+      case 'firstName':
+        fakeData = faker.person.firstName(); // Using Faker to generate a first name
+        break;
+      case 'lastName':
+        fakeData = faker.person.lastName(); // Using Faker to generate a last name
+        break;
+      case 'companyName':
+        fakeData = faker.company.name(); // Using Faker to generate a company name
+        break;
+      default:
+        return null; // In case something goes wrong
+    }
+
+    return fakeData; // Return the generated data
+  } catch (error) {
+    console.error(
+      `>> ❌ Error - Could not generate test data for ${attribute}, due to error: ${(error as Error).message}`
+    );
+    return null;
+  }
+}
+/*----------------------------------------------------------------------------------------------------------------*/
+// generate an email by combining the default automation email with a random number
+export async function generateRandomEmail() : Promise <string|null>
+{
+  try
+  {
+    const randomNum = Math.floor(10000 + Math.random() * 90000);
+    const randomEmail = "AutomationUser+" + randomNum + "@yoyogroup.com";
+    console.log("[INFO] ℹ️ Email generated is : " + randomEmail);
+    return randomEmail;
+
+  }
+  catch (error) 
+  {
+    console.error(`>> ❌ Error - Could not randon email`);
+    return null;
+}
+}
+/*----------------------------------------------------------------------------------------------------------------*/
+// // Function to select an option from a dropdown defined as <button> in the code
+export async function selectDropdownOption(
+  dropdownLocator: () => Locator, // Locator for the dropdown button
+  optionText: string,             // The text of the option to select
+  page: Page                      // Playwright page object
+): Promise<void> {
+  try {
+    // Step 1: Click the dropdown button to open the dropdown
+    await dropdownLocator().click();
+
+    // Wait for the options to be visible and interactable
+    const dropdownOptions = page.locator('[role="option"]');
+    await dropdownOptions.waitFor({ state: 'visible' }); 
+
+    // Step 2: Find the desired option by its text and select it
+    const option = dropdownOptions.locator(`text=${optionText}`);
+    await option.click({ force: true }); // Force click if needed
+  } catch (error) 
+  {
+    console.error(`❌ Failed to select "${optionText}" from the dropdown. Error: ${error}`);
+    throw error;
+  }
 }
 /*----------------------------------------------------------------------------------------------------------------*/

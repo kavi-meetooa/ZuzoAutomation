@@ -11,7 +11,9 @@ const messages =
     },
     modals:
     {
-
+        "noCardsHeader" : "You don’t seem to have a payment card added yet",
+        "noCardsMessage" : "Before you can go ahead with creating a reward, you need to add a payment card and billing details first.",
+        "logoutMessage" : "Are you sure you would like to log out of your Zuzo account?",
     },
     toastMessages:
     {
@@ -21,6 +23,8 @@ const messages =
     infoMessage:
     {
         "sentEmail.header" : "An email has been sent!",
+        "noPaymentsMethodHeader" : "No payment method yet!",
+        "noPaymentsMethodText" : "It looks like you haven’t added a payment method or billing information to Zuzo yet.",
     }
 };
 

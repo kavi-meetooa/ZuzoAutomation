@@ -12,10 +12,12 @@
   "dependencies": {
     "@azure/identity": "^4.6.0",
     "@azure/msal-node": "^3.0.1",
+    "@faker-js/faker": "^9.4.0",
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "@types/node": "^22.10.7",
     "@types/node-fetch": "^2.6.12",
     "axios": "^1.7.9",
+    "chalk": "^5.4.1",
     "cheerio": "^1.0.0",
     "node-fetch": "^2.7.0",
     "punycode": "^2.3.1"

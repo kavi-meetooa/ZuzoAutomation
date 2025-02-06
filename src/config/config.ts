@@ -5,8 +5,12 @@ export const config = {
   senderEmail: "hello@zuzocard.com", 
   scope: 'https://graph.microsoft.com/.default',
   baseUrl: 'https://app-dev.build.zuzocard.com/',
-
+  registrationUrl : 'https://app-dev.build.zuzocard.com/create-account/',
+  paymentMethodsUrl : 'https://app-dev.build.zuzocard.com/dashboard/create-rewards',
   credentials: {
-    email: "kaviraj.meetooa+zuzo123@yoyogroup.com",  
+    email: "AutomationUser@yoyogroup.com", 
   },
+  validCard : "4000000000000002",
+  expiryDate : "05/29",
+  cvv : "234"
 };
