@@ -354,3 +354,20 @@ export async function selectDropdownOption(
   }
 }
 /*----------------------------------------------------------------------------------------------------------------*/
+// Method to count the number of rows in a table
+export async function countTableRows(page: Page): Promise<number> 
+{
+  await page.waitForTimeout(5000);
+  await page.waitForSelector('table tbody tr', { state: 'visible' });
+  const numOfRow = await page.locator('table tr:visible').count();
+  return numOfRow;
+}
+/*----------------------------------------------------------------------------------------------------------------*/
+// Method to count the number of rows in a table by using tr class name
+export async function countTableRowsByClass(page: Page, Class: string): Promise<number> {
+  const selector = `tr[class*="${Class}"]:visible`;
+
+  await page.waitForSelector(selector, { state: 'visible' });
+  return await page.locator(selector).count();
+}
+/*----------------------------------------------------------------------------------------------------------------*/

@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: 'src/tests',
@@ -6,11 +6,7 @@ export default defineConfig({
   retries: 1,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
-    headless: false, // Run all tests in headless mode by default
-    viewport: { width: 1920, height: 1080 }, // Prevent mobile layout
-    launchOptions: {
-      args: ['--window-size=1920,1080'], // Ensures proper viewport size in headless mode
-    },
+    headless: true, // Run in headful mode (browser UI visible)
     ignoreHTTPSErrors: true,
     screenshot: 'on',
     video: 'retain-on-failure',
@@ -20,10 +16,9 @@ export default defineConfig({
     {
       name: 'chromium',
       use: {
-        ...devices['Desktop Chromium'],
-        viewport: null, // Let the browser decide the size
+        browserName: 'chromium',
         launchOptions: {
-          args: ['--start-maximized'], // Maximized window in non-headless mode
+          args: ['--start-maximized'], // Start browser maximized
         },
       },
     },
