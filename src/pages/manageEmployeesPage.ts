@@ -5,6 +5,7 @@ import { faker } from '@faker-js/faker';
 export class manageEmployeesPage {
     private page: Page;
 
+    public employeeRowClass = 'bg-yoyo-charcoal-lite-1';
     // Locators object with dynamic locator function for channels
     private Locators = {
         optionAdHoc             : () => this.page.getByText('Ad-Hoc RewardOnce-off'),
@@ -126,8 +127,7 @@ async addSingleEmployee(): Promise<void> {
 // Method to edit employee details (random)
 async editEmployeeDetails(): Promise<void> 
 {
-    const employeeRowClass = 'bg-yoyo-charcoal-lite-1';
-    const numOfRows = await helper.countTableRowsByClass(this.page, employeeRowClass);
+    const numOfRows = await helper.countTableRowsByClass(this.page, this.employeeRowClass);
     console.log("Number of rows is : " + numOfRows);
 
     if (numOfRows === 0) 
@@ -191,8 +191,7 @@ async editEmployeeDetails(): Promise<void>
 // Method to remove employee (random)
 async removeEmployee() : Promise<void>
 {
-    const employeeRowClass = 'bg-yoyo-charcoal-lite-1';
-    const numOfRows = await helper.countTableRowsByClass(this.page, employeeRowClass);
+    const numOfRows = await helper.countTableRowsByClass(this.page, this.employeeRowClass);
     if (numOfRows === 0) 
     {
         console.log(`[INFO] ℹ️ Employee table is empty. Skipping edit operation.`);

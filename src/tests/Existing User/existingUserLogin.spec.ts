@@ -3,6 +3,7 @@ import  *  as actions from '../../utils/actions';
 import { config } from "../../config/config"; 
 import { paymentPage } from '../../pages/managePaymentPage';
 import { manageEmployeesPage } from '../../pages/manageEmployeesPage';
+import { issueRewardPage } from '../../pages/issueRewardPage';
 
 test.describe('Tests for Existing User', () => {
 /*--------------------------------------------------------------------------------------*/ 
@@ -77,5 +78,53 @@ test('As an existing user, I want to remove an employee from my company', async 
     console.log("👍 -- 🟢 Existing user : Remove employee Test Passed 🎉 -- ");
     console.log("-".repeat(60));
 }); 
-/*--------------------------------------------------------------------------------------*/ 
+/*-----------------------------------------------------------------------------------------------------------------*/ 
+test.only('As an existing user, I send an Ad Hoc Reward of same value to multiple employees', async ({ page }) => {
+    const employeePage = new manageEmployeesPage(page);
+    const issuancePage = new issueRewardPage(page);
+    const PaymentsPage = new paymentPage(page);
+
+    await employeePage.selectRewardType("Ad-Hoc");
+    await issuancePage.selectMultipleEmployees(4);
+    await issuancePage.processAdHocRewards("samevalue");
+    await PaymentsPage.authoriseCard();
+    await issuancePage.confirmPaymentProcessed();
+   
+    console.log("-".repeat(100));
+    console.log("👍 -- 🟢 Existing user : Process Ad Hoc Rewards(same value) for Multiple employees Test Passed 🎉 -- ");
+    console.log("-".repeat(100));
+}); 
+/*---------------------------------------------------------------------------------------------------------------*/ 
+test.only('As an existing user, I send an Ad Hoc Reward of same value to a single employees', async ({ page }) => {
+    const employeePage = new manageEmployeesPage(page);
+    const issuancePage = new issueRewardPage(page);
+    const PaymentsPage = new paymentPage(page);
+
+    await employeePage.selectRewardType("Ad-Hoc");
+    await issuancePage.selectSingleEmployee();
+    await issuancePage.processAdHocRewards("samevalue");
+    await PaymentsPage.authoriseCard();
+    await issuancePage.confirmPaymentProcessed();
+   
+    console.log("-".repeat(100));
+    console.log("👍 -- 🟢 Existing user : Process Ad Hoc Rewards(same value) for a single employee Test Passed 🎉 -- ");
+    console.log("-".repeat(100));
+}); 
+/*---------------------------------------------------------------------------------------------------------------*/ 
+test.only('As an existing user, I send an Ad Hoc Reward of same value to all employees', async ({ page }) => {
+    const employeePage = new manageEmployeesPage(page);
+    const issuancePage = new issueRewardPage(page);
+    const PaymentsPage = new paymentPage(page);
+
+    await employeePage.selectRewardType("Ad-Hoc");
+    await issuancePage.selectAllEmployees();
+    await issuancePage.processAdHocRewards("samevalue");
+    await PaymentsPage.authoriseCard();
+    await issuancePage.confirmPaymentProcessed();
+   
+    console.log("-".repeat(100));
+    console.log("👍 -- 🟢 Existing user : Process Ad Hoc Rewards(same value) for all employees Test Passed 🎉 -- ");
+    console.log("-".repeat(100));
+}); 
+/*---------------------------------------------------------------------------------------------------------------*/ 
 });// end of test.describe
