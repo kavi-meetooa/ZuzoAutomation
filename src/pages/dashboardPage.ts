@@ -7,6 +7,7 @@ export class dashboardPage {
     // Locators object with dynamic locator function for channels
     private Locators = {
         rewardsMenu             : () => this.page.getByRole('button', { name: 'Rewards' }),
+        createRewards           : () => this.page.locator('//*[@id="headlessui-menu-items-2"]/p[1]'),
         btnLogOut               : () => this.page.locator('//*[@id="logout"]'),
         btnContactUs            : () => this.page.getByRole('button', { name: 'Contact us' }),
         pageHeader              : () => this.page.locator('//p[contains(text(), "Reward Your Team Now")]'),

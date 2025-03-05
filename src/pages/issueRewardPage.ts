@@ -27,7 +27,7 @@ export class issueRewardPage {
         employeeRecord          : (employeeFullName: string) => this.page.getByText(employeeFullName, { exact: true }).first(),
         btnContinue             : () => this.page.getByRole('button', { name: 'Continue' }),
         modalPaymentProcessed   : () => this.page.getByRole('heading', { name: 'Ad-Hoc Reward confirmed!' }),
-
+        btnActivateP2P          : () => this.page.getByRole('button', { name: 'Activate Employees to P2P' })
     }
     constructor(page: Page) 
     {
@@ -119,7 +119,7 @@ async processAdHocRewards(issuanceType : string) : Promise<void>
 
     if (issuanceType.toLowerCase() == "samevalue")
     {
-        await this.selectIssuanceValue(20.00);
+        await this.selectIssuanceValue(25.00);
         await this.editIssuanceMessage();
         await this.confirmIssuanceModal();
         console.log(`[INFO] ℹ️  Issuance send -> Awaiting for card approval`);
@@ -129,7 +129,6 @@ async processAdHocRewards(issuanceType : string) : Promise<void>
 
     }
 }
-
 /*-----------------------------------------------------------------------------------------------------------------------*/ 
 // Method to select same value for issuance
 async selectIssuanceValue(amount : number) : Promise<void>
@@ -171,4 +170,20 @@ async confirmPaymentProcessed() : Promise<void>
     await helper.verifyElementPresent(this.Locators.modalPaymentProcessed());
     await helper.clickElement(this.Locators.btnThanks(), "Click on Thanks button after processing payment");
 }
+/*-----------------------------------------------------------------------------------------------------------------------*/
+async activateP2P() : Promise<void>
+{
+    const totalEmployeesLocator = this.page.locator('//*[@class="text-yoyo-flint-mint inline"]');
+    // Scroll into view if needed
+    await totalEmployeesLocator.scrollIntoViewIfNeeded();
+    
+    // Get the text content and convert it to a number
+    const totalEmployeesText = await totalEmployeesLocator.textContent();
+    const totalEmployees = totalEmployeesText ? parseInt(totalEmployeesText.trim(), 10) : 0;
+
+    console.log(`${totalEmployees} have been selected for P2P Activation`);
+
+    await helper.clickElement(this.Locators.btnActivateP2P(), "Click on Activate P2P button");
+}
+/*-----------------------------------------------------------------------------------------------------------------------*/
 }

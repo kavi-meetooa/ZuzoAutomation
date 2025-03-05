@@ -8,6 +8,8 @@ export class manageEmployeesPage {
     public employeeRowClass = 'bg-yoyo-charcoal-lite-1';
     // Locators object with dynamic locator function for channels
     private Locators = {
+        rewardsMenu             : () => this.page.getByRole('button', { name: 'Rewards' }),
+        createRewards           : () => this.page.locator('//*[@id="headlessui-menu-items-2"]/p[1]'),
         optionAdHoc             : () => this.page.getByText('Ad-Hoc RewardOnce-off'),
         optionP2P               : () => this.page.getByRole('button', { name: 'Peer-to-Peer Recognition' }),
         btnContinue             : () => this.page.getByRole('button', { name: 'Continue' }),
@@ -54,6 +56,10 @@ export class manageEmployeesPage {
 /*******************************************************************************************************************/ 
 // Method to select a Reward type and click on Continue
 async selectRewardType(rewardType: string): Promise<void> {
+    await helper.clickElement(this.Locators.rewardsMenu(), "Click on Rewards Menu");
+    await helper.clickElement(this.Locators.createRewards(), "Click on Create Rewards");
+    await this.page.waitForTimeout(3000);
+    
     if (rewardType.toLowerCase() === "ad-hoc") 
     {
         await helper.clickElement(this.Locators.optionAdHoc(), "Click on Ad Hoc Rewards");
@@ -73,7 +79,7 @@ async selectRewardType(rewardType: string): Promise<void> {
 }
 /*******************************************************************************************************************/ 
 // Method to add an employee
-async addSingleEmployee(): Promise<void> {
+async addSingleEmployee(): Promise<string> {
     await helper.clickElement(this.Locators.btnAddEmployee(), "Click on Add Employee button");
 
     const firstName = await helper.generateFakeData("firstName"); // Await here
@@ -118,6 +124,7 @@ async addSingleEmployee(): Promise<void> {
     await expect(employeeAdded).toBeVisible();
     
     console.log(`[INFO] ℹ️  New Employee ${firstName} ${lastName} has been successfully added`);
+    return email;
 }
 /*******************************************************************************************************************/ 
 // Method to add bulk employees

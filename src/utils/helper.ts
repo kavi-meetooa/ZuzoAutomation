@@ -242,9 +242,9 @@ export async function retrieveEmail(companyEmail: string, emailSubject: string):
   if (messages.length === 0) {
     throw new Error('>> ❌ No email found with the given subject');
   }
-
+  const subject = response.data.value[0].subject;
   const email = messages[0];
-  console.log('[INFO] ℹ️ Email Found with subject :', email.subject);
+  console.log('[INFO] ℹ️ Email Found with subject :', subject);
 
   // Step 4: Parse the email body to find the "Verify My Email" link
   const emailBody = email.body.content;

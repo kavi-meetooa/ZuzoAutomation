@@ -13,5 +13,7 @@ export const config = {
   validCard : "4000000000000002",
   expiryDate : "05/29",
   cvv : "234",
-  issuanceMessage : "Hi {{name}}, this is a test reward for automation test purposes.\nCongratulations and thank you."
+  issuanceMessage : "Hi {{name}}, this is a test reward for automation test purposes.\nCongratulations and thank you.",
+  slackemalSubject : "Slack confirmation code:"
+
 };
