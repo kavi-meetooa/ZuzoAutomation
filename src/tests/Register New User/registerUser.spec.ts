@@ -4,6 +4,7 @@ import { paymentPage } from '../../pages/managePaymentPage';
 import { manageEmployeesPage } from '../../pages/manageEmployeesPage';
 import { issueRewardPage } from '../../pages/issueRewardPage';
 import { slackPage } from '../../pages/slackPage';
+import { p2pPage } from '../../pages/p2pPage';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -11,7 +12,7 @@ let registeredEmail: string, company : string, cardName : string;
 
 const dynamicConfigPath = path.join(__dirname, '../../config/dynamicConfig.json');
 
-test.describe('Registration Tests for New Users', () => {
+test.describe('Tests for New Zuzo Users', () => {
 /*--------------------------------------------------------------------------------------*/ 
     test.beforeAll(async () => {
         // Load registeredEmail from file before running any test
@@ -119,7 +120,7 @@ test.describe('Registration Tests for New Users', () => {
         console.log("-".repeat(60));
     }); 
 /*--------------------------------------------------------------------------------------*/ 
-test('As an new admin, I want to create a new company, add employees, payment details and sync employees to Slack', async ({ page }) => {
+test.only('As an new admin, I want to create a new company, payment details and sync employees to Slack and activate P2P', async ({ page }) => {
     const employeeEmails: string[] = [];
     // Register company
     registeredEmail = await actions.registerUser(page, "Slack");
@@ -142,18 +143,6 @@ test('As an new admin, I want to create a new company, add employees, payment de
     console.log("👍 -- 🟢 New admin : Add New Billing Info -> Test Passed 🎉 -- ");
     console.log("-".repeat(60));
 
-    // Add 5 employees to the company
-    const employeePage = new manageEmployeesPage(page);
-    await employeePage.selectRewardType("Ad-Hoc");
-        for (let i = 1; i <= 2; i++) {
-            const email = await employeePage.addSingleEmployee();
-            employeeEmails.push(email);
-            console.log(`✅ Employee ${i} added successfully.`);
-        }
-        console.log("-".repeat(60));
-        console.log("👍 -- 🟢 New admin : Added 2 new employees manually -> Test Passed 🎉 -- ");
-        console.log("-".repeat(60)); 
-
     // Sync all employees to Slack
     const issuancePage     = new issueRewardPage(page);
     const slackActionsPage = new slackPage(page);
@@ -161,14 +150,35 @@ test('As an new admin, I want to create a new company, add employees, payment de
     const configData = JSON.parse(fs.readFileSync(dynamicConfigPath, 'utf8'));
     registeredEmail = configData.registeredEmail;
 
-    await issuancePage.selectAllEmployees();
+    const employeePage = new manageEmployeesPage(page);
 
-    const channelName = await slackActionsPage.createSlackWorkspace(registeredEmail, employeeEmails);
-    await issuancePage.selectAllEmployees();
+    await employeePage.selectRewardType("peer-to-peer");
+
+    // Create Slack Workspace
+    const channelName = await slackActionsPage.createSlackWorkspaceWeb(registeredEmail);
+    console.log("-".repeat(60));
+    console.log("👍 -- 🟢 New admin : New Slack Workspace Creation -> Test Passed 🎉 -- ");
+    console.log("-".repeat(60));
+    
+    // Sync Slack Users
     await slackActionsPage.syncSlackUsers();
+    console.log("-".repeat(60));
+    console.log("👍 -- 🟢 New admin : Sync Slack Users -> Test Passed 🎉 -- ");
+    console.log("-".repeat(60));
+
+    // Activate P2P
+    const P2PPage = new p2pPage(page);
+    await P2PPage.navigatetoP2Ppage();
+    await issuancePage.selectAllEmployees();
+    await P2PPage.activateP2P("50.00", "Teamwork");
+    await PaymentsPage.authoriseCard();
+    await P2PPage.confirmP2PEnabled();
+    console.log("-".repeat(60));
+    console.log("👍 -- 🟢 New admin : P2P Activation for all employees -> Test Passed 🎉 -- ");
+    console.log("-".repeat(60));
 }); 
 /*--------------------------------------------------------------------------------------*/ 
-test.only('As a new admin, I want to create a new slack workspace for my new company', async ({ page }) => {
+test('As a new admin, I want to create a new slack workspace for my new company', async ({ page }) => {
     registeredEmail = await actions.registerUser(page, "Slack");
     console.log("-".repeat(60));
     console.log("👍 -- 🟢 New admin : Registration Test Passed 🎉 -- ");
@@ -178,7 +188,6 @@ test.only('As a new admin, I want to create a new slack workspace for my new com
 
     const configData = JSON.parse(fs.readFileSync(dynamicConfigPath, 'utf8'));
     registeredEmail = configData.registeredEmail;
-    await page.waitForTimeout(3000);
     await slackActionsPage.createSlackWorkspaceWeb(registeredEmail);
 });
 /*--------------------------------------------------------------------------------------*/

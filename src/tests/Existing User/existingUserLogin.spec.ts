@@ -5,12 +5,13 @@ import { paymentPage } from '../../pages/managePaymentPage';
 import { manageEmployeesPage } from '../../pages/manageEmployeesPage';
 import { issueRewardPage } from '../../pages/issueRewardPage';
 import { slackPage } from '../../pages/slackPage';
+import { p2pPage } from '../../pages/p2pPage';
 
 test.describe('Tests for Existing User', () => {
 /*--------------------------------------------------------------------------------------*/ 
     test.beforeEach(async ({ page }) => {
         //await actions.executeLogin(page, config.credentials.email);
-        await actions.executeLogin(page, "AutomationUser+90367@yoyogroup.com");
+        await actions.executeLogin(page, "AutomationUser+34617@yoyogroup.com");
         
         console.log("-".repeat(60));
         console.log("👍 -- 🟢 Existing user : Login to Zuzo Test Passed 🎉 -- ");
@@ -140,7 +141,7 @@ test.describe('Tests for Existing User', () => {
         console.log("-".repeat(100));
     }); 
 /*---------------------------------------------------------------------------------------------------------------*/ 
-    test.only('As an existing user, I sync all my employees to Slack', async ({ page }) => {
+    test('As an existing user, I sync all my employees to Slack', async ({ page }) => {
         const employeePage     = new manageEmployeesPage(page);
         const issuancePage     = new issueRewardPage(page);
         const slackActionsPage = new slackPage(page);
@@ -148,6 +149,19 @@ test.describe('Tests for Existing User', () => {
         await employeePage.selectRewardType("Ad-Hoc");
         await issuancePage.selectAllEmployees();
         //await slackActionsPage.createSlackWorkspace("AutomationUser+95494@yoyogroup.com");
+    });
+/*---------------------------------------------------------------------------------------------------------------*/ 
+    test.only('As an existing user, I activate P2P for all my employees', async ({ page }) => {
+        const employeePage      = new manageEmployeesPage(page);
+        const issuancePage      = new issueRewardPage(page);
+        const P2PPage           = new p2pPage(page);
+        const PaymentsPage      = new paymentPage(page);
+
+        await P2PPage.navigatetoP2Ppage();
+        await issuancePage.selectAllEmployees();
+        await P2PPage.activateP2P("50.00", "Teamwork");
+        await PaymentsPage.authoriseCard();
+        await P2PPage.confirmP2PEnabled();
     });
 /*---------------------------------------------------------------------------------------------------------------*/ 
 });// end of test.describe

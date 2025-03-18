@@ -173,106 +173,7 @@ async extractSlackCode(emailSubject : string) : Promise<void>
     console.log("✅ Successfully entered the Slack confirmation code.");
     await this.page.waitForTimeout(7000);
 }
-/*******************************************************************************************************************/ 
-// Method to sync slack users
-async createSlackWorkspace(email : string, employeesEmail : string[]) : Promise<string|null>
-{
-    await helper.clickElement(this.Locators.btnSyncSlack(), "Click on Sync Slack Users button");
-    await helper.verifyElementPresent(this.Locators.headerSyncSlackModal());
-    await helper.clickElement(this.Locators.btnContinue(), "Click on Continue in the modal");
-    await this.page.waitForTimeout(5000);
-
-    await helper.clickElement(this.Locators.createNewWorkspaceLink(), "Click on Create new workspace link");
-    await this.page.waitForTimeout(3000);
-
-    await helper.fillElement(this.Locators.txtSlackEmail(), email , "Enter email for slack user");
-    await helper.clickElement(this.Locators.btnContinueSlack(), "Click on Continue button")
-    await this.page.waitForTimeout(2000);
-    await helper.verifyElementPresent(this.Locators.headerSlackCode());
-    await this.page.waitForTimeout(10000);
-
-    const emailSubject = await this.retrieveEmail(config.slackemalSubject);
-    console.log("Email subject is : " + emailSubject);
-    await this.extractSlackCode(emailSubject);
-
-    const configData = JSON.parse(fs.readFileSync(dynamicConfigPath, 'utf8'));
-    const companyName = faker.company.name();
-    await helper.fillElement(this.Locators.txtSlackCompanyName(), companyName, "Enter a company Name in Slack");
-    await helper.clickElement(this.Locators.btnSlackNextStep(), "Click on Next button");
-    await this.page.waitForTimeout(3000);
-    await helper.fillElement(this.Locators.slacktxtAdminName(), companyName + "- Admin", "Enter name for the Admin");
-    await helper.clickElement(this.Locators.btnSlackNextStep(), "Click on Next button");
-    await this.page.waitForTimeout(3000);
-
-    /*
-    // Add all employees stored in the array -> same ones that were added to the new company
-    for (const employeeEmail of employeesEmail) {
-        await this.Locators.addCoWorkerInput().type(employeeEmail, { delay: 50 });
-        await this.page.keyboard.press('Space'); // Press space after each email
-        await this.page.waitForTimeout(2000);
-        await this.page.keyboard.press('Enter'); // Press Enter after each email
-        await this.page.waitForTimeout(2000);
-        console.log(`✅ Added email: ${employeeEmail}`);
-    }
-    console.log("🎉 All employee emails have been entered successfully!");
-    */
-
-    for (let i = 1; i <= 5; i++) 
-    {
-        const employeeEmail = await helper.generateRandomEmail();
-        if (employeeEmail) 
-        {
-            await this.Locators.addCoWorkerInput().type(employeeEmail, { delay: 25 });
-            await this.page.keyboard.press('Space'); // Press space after each email
-            await this.page.waitForTimeout(2000);
-            await this.page.keyboard.press('Enter'); // Press Enter after each email
-            await this.page.waitForTimeout(2000);
-            console.log(`✅ Added email: ${employeeEmail}`);
-        } else 
-        {
-            console.error("Generated email is null or undefined");
-        }
-    } 
-    await helper.clickElement(this.Locators.btnSlackNext(), "Click on Next button");
-    //await helper.clickElement(this.Locators.slackSkipStep(), "Click on Skip Step link");
-    //await helper.clickElement(this.Locators.btnSlackSkipStep(), "Click on Skip Step in modal");
-
-    const randomNumber = Math.floor(1000 + Math.random() * 9000);
-    const newChannel   = "testChannel - " +  randomNumber;
-    await helper.fillElement(this.Locators.txtSlackProject(), newChannel, "Enter a project type");
-    await helper.clickElement(this.Locators.btnSlackNextStep(), "Click on Next button");
-
-    await this.page.waitForTimeout(3000);
-    await helper.clickElement(this.Locators.btnLimitedVersion(), "Click on Start with Free version button");
-    await this.page.waitForTimeout(15000);
-
-   //await helper.verifyElementPresent(this.Locators.newSlackChannel());
-    //await helper.clickElement(this.Locators.btnCloseSlackHelp(), "Close help modal");
-    
-    //await helper.clickElement(this.Locators.btnSwitchWorkspace(), 'Click on Switch Workspace button');
-    //const slackWorkspace = await this.Locators.workspaceLocator().textContent();
-    //console.log("Workspace created is : " + slackWorkspace);
-
-    await helper.clickElement(this.Locators.btnAddChannel(), "Click on Channel Button");
-    await helper.clickElement(this.Locators.btnCreateChannel(), "Click on Create Channel Button");
-    await helper.clickElement(this.Locators.btnSubMenuCreateChannel(), "Click on Create Channelsub menu");
-    await helper.clickElement(this.Locators.btnNext(), "Click on Next button");
-    const channelName   = "zuzoReward-" +  randomNumber;
-    await helper.fillElement(this.Locators.txtChannelName(), channelName, "Enter a Channel Name");
-    //await helper.clickElement(this.Locators.btnCloseSlackHelp(), "Close help modal");
-    await helper.clickElement(this.Locators.btnCreate(), "Click on Create button");
-    await helper.clickElement(this.Locators.radioBtnAddSpecific(), "Select option Add Specific people");
-    await helper.clickElement(this.Locators.btnSkipForNow(), "Click Skip for Now button");
-
-
-    console.log("[INFO] ℹ️  New Slack channel created : " + channelName);
-
-    console.log("[INFO] ℹ️  Navigating back to Zuzo");
-    await this.page.goto('https://app-dev.build.zuzocard.com/dashboard/create-rewards/ad-hoc');
-    await this.page.waitForTimeout(3000);
-    return channelName;
-}
-/*******************************************************************************************************************/ 
+/*******************************************************************************************************************/  
 // Method to get sync slackUsers
 async syncSlackUsers() : Promise<void>
 {
@@ -303,7 +204,7 @@ async createSlackWorkspaceWeb (email : string) : Promise<string|null>
     await helper.clickElement(this.Locators.btnContinueSlack(), "Click on Continue button");
 
     await helper.verifyElementPresent(this.Locators.headerSlackCode());
-    await this.page.waitForTimeout(9000);
+    await this.page.waitForTimeout(12000);
 
     const emailSubject = await this.retrieveEmail(config.slackemalSubject);
     console.log("Email subject is : " + emailSubject);
@@ -345,10 +246,10 @@ async createSlackWorkspaceWeb (email : string) : Promise<string|null>
         await helper.clickElement(this.Locators.btnLimitedVersion(), "Click on Start with Free version button");
         await this.page.waitForTimeout(15000);
 
-        if (await (this.Locators.btnCloseSlackHelp()).isVisible()) 
-        {
-            await helper.clickElement(this.Locators.btnCloseSlackHelp(), "Close Slack help modal");
-        }
+
+        await this.page.mouse.click(10, 10); 
+        await this.page.waitForTimeout(3000);
+        await this.page.mouse.click(10, 10); 
         
         await helper.clickElement(this.Locators.btnAddChannel(), "Click on Channel Button");
         await helper.clickElement(this.Locators.btnCreateChannel(), "Click on Create New Channel Button");
@@ -364,8 +265,10 @@ async createSlackWorkspaceWeb (email : string) : Promise<string|null>
         await helper.clickElement(this.Locators.btnSwitchWorkspace(), 'Click on Switch Workspace button');
         const slackWorkspace = await this.Locators.workspaceLocator().textContent();
         console.log("Workspace created is : " + slackWorkspace + " and new channel created is : " + channelName);
+        await helper.navigateToUrl(this.page, "https://app-dev.build.zuzocard.com/dashboard/create-rewards/peer-to-peer");
+        console.log(`✅  Slack Workspace created successfully`);
         return slackWorkspace;
 }   
-
+/*******************************************************************************************************************/
 }
 

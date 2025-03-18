@@ -12,7 +12,7 @@ export class dashboardPage {
         btnContactUs            : () => this.page.getByRole('button', { name: 'Contact us' }),
         pageHeader              : () => this.page.locator('//p[contains(text(), "Reward Your Team Now")]'),
         optionAdHoc             : () => this.page.getByText('Ad-Hoc RewardOnce-off'),
-        optionP2P               : () => this.page.getByText('Peer-to-Peer Recognition', { exact: false }),
+        optionP2P               : () => this.page.getByText('Peer-to-Peer Recognition'),
         btnContinue             : () => this.page.getByRole('button', { name: 'Continue' }),
         noCardsModalbtnBack     : () => this.page.getByRole('button', { name: 'Back' }),
         noCardsModalbtnAddCard  : () => this.page.getByRole('button', { name: 'Add a Card' }),
