@@ -151,7 +151,7 @@ test.describe('Tests for Existing User', () => {
         //await slackActionsPage.createSlackWorkspace("AutomationUser+95494@yoyogroup.com");
     });
 /*---------------------------------------------------------------------------------------------------------------*/ 
-    test.only('As an existing user, I activate P2P for all my employees', async ({ page }) => {
+    test('As an existing user, I activate P2P for all my employees', async ({ page }) => {
         const employeePage      = new manageEmployeesPage(page);
         const issuancePage      = new issueRewardPage(page);
         const P2PPage           = new p2pPage(page);
