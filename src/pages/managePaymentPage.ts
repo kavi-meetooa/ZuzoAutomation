@@ -143,9 +143,10 @@ async authoriseCard() : Promise<void>
     console.log(">> ✅ Test step : PASS - Click on Next button");
 
     // Submit for authorisation by payment gateway
-    const btnSubmit = frame.locator('//*[@name="UsernamePasswordEntry"]');
+    const btnSubmit = frame.locator('//*[@class="form-submit-button"]');
     await btnSubmit.click();
     console.log(">> ✅ Test step : PASS - Click on Submit button");
+    await this.page.waitForTimeout(5000);
     console.log("[INFO] ℹ️  Card payment has been authorised");
 }
 /*-----------------------------------------------------------------------------------------------------------------------*/
